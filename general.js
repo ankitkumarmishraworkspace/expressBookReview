@@ -1,6 +1,3 @@
-// general.js
-// Axios implementation for Express Book Review API
-
 const axios = require("axios");
 
 const BASE_URL = "http://localhost:5000";
@@ -10,11 +7,16 @@ const BASE_URL = "http://localhost:5000";
 ========================= */
 async function getAllBooks() {
     try {
-        const response = await axios.get(`${BASE_URL}/books`);
-        console.log("All Books:");
-        console.log(response.data);
+        const res = await axios.get(`${BASE_URL}/books`);
+
+        if (res.data && Object.keys(res.data).length > 0) {
+            console.log("All Books:", res.data);
+        } else {
+            console.log("No books found");
+        }
+
     } catch (error) {
-        console.error(error.message);
+        console.log("Error fetching all books:", error.response?.status || error.message);
     }
 }
 
@@ -23,11 +25,20 @@ async function getAllBooks() {
 ========================= */
 async function getBookByISBN(isbn) {
     try {
-        const response = await axios.get(`${BASE_URL}/books/isbn/${isbn}`);
-        console.log("Book by ISBN:");
-        console.log(response.data);
+        const res = await axios.get(`${BASE_URL}/books/isbn/${isbn}`);
+
+        if (res.data) {
+            console.log("Book found:", res.data);
+        } else {
+            console.log("Book not found for ISBN:", isbn);
+        }
+
     } catch (error) {
-        console.error(error.message);
+        if (error.response && error.response.status === 404) {
+            console.log("No book found for ISBN:", isbn);
+        } else {
+            console.log("Error:", error.message);
+        }
     }
 }
 
@@ -36,11 +47,16 @@ async function getBookByISBN(isbn) {
 ========================= */
 async function getBooksByAuthor(author) {
     try {
-        const response = await axios.get(`${BASE_URL}/books/author/${author}`);
-        console.log("Books by Author:");
-        console.log(response.data);
+        const res = await axios.get(`${BASE_URL}/books/author/${author}`);
+
+        if (res.data && res.data.books && res.data.books.length > 0) {
+            console.log("Books by author:", res.data.books);
+        } else {
+            console.log("No books found for author:", author);
+        }
+
     } catch (error) {
-        console.error(error.message);
+        console.log("Error fetching author books:", error.message);
     }
 }
 
@@ -49,19 +65,23 @@ async function getBooksByAuthor(author) {
 ========================= */
 async function getBooksByTitle(title) {
     try {
-        const response = await axios.get(`${BASE_URL}/books/title/${title}`);
-        console.log("Books by Title:");
-        console.log(response.data);
+        const res = await axios.get(`${BASE_URL}/books/title/${title}`);
+
+        if (res.data && res.data.books && res.data.books.length > 0) {
+            console.log("Books by title:", res.data.books);
+        } else {
+            console.log("No books found for title:", title);
+        }
+
     } catch (error) {
-        console.error(error.message);
+        console.log("Error fetching title books:", error.message);
     }
 }
 
 /* =========================
-   TEST CALLS (RUN THESE)
+   TEST CALLS
 ========================= */
 
-// Replace values based on your JSON data
 getAllBooks();
 getBookByISBN("1234567890");
 getBooksByAuthor("J.K. Rowling");
